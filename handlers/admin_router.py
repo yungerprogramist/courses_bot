@@ -6,8 +6,9 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from utils import keyboard as kb
-from DataBase import google_sheets as gs
-from DataBase import db
+from DataBase.google_sheet import GoogleSheet as gs
+from DataBase.courses_db import CoursesDB
+from DataBase.users_db import UsersDB
 from utils.FSMclasses import  DataCorse, MilingMes
 
 
@@ -59,21 +60,27 @@ async def description_course(message: Message, state: FSMContext):
 
 @router.message(DataCorse.value)
 async def value_course(message: Message, state: FSMContext, bot: Bot):
+        
+    try:
 
-    text_value = message.caption
-    await state.update_data(value=text_value)
+        text_value = message.caption
+        await state.update_data(value=text_value)
 
 
-    message_id=message.message_id
-    file_id = message.document.file_id
-    await bot.copy_message(chat_id=CHANEL_DB, from_chat_id=message.from_user.id, message_id=message_id)
+        message_id=message.message_id
+        file_id = message.document.file_id
+        await bot.copy_message(chat_id=CHANEL_DB, from_chat_id=message.from_user.id, message_id=message_id)
+        
+        data = await state.get_data()
+        data['filepath'] = file_id
+        CoursesDB().add_course_db(data)
+
+        await state.clear()
+        await message.answer('Курс успешно загружен', reply_markup=kb.admin_menu)
     
-    data = await state.get_data()
-    data['filepath'] = file_id
-    db.add_course_db(data)
-
-    await state.clear()
-    await message.answer('Курс успешно загружен', reply_markup=kb.admin_menu)
+    except: 
+        await state.clear()
+        await message.answer('Что то пошло не так. Попробуйте повторить попытку', reply_markup=kb.admin_menu)
 
 
 
@@ -91,7 +98,7 @@ async def deletecourse(callback: CallbackQuery):
 @router.callback_query(lambda call: 'deleteaccept:' in call.data )
 async def deletecourse_accept(callback: CallbackQuery):
     name = callback.data.split(':')[1]
-    if db.delete_course(name):
+    if CoursesDB().delete_course(name):
         await callback.message.answer(f'Курс {name} успешно удален', reply_markup=kb.admin_menu)
     else:
         await callback.message.answer(f'Что то пошло не так во время удаленния курса {name}', reply_markup=kb.admin_menu)
@@ -103,7 +110,7 @@ async def deletecourse_accept(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'miling_mes')
 async def miling_mesage(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer('Отправьте сообщения и фотографию для рассылки')
+    await callback.message.answer('Отправьте сообщение (можете прикрепить любой файл)')
     await state.set_state(MilingMes.mil_message)
 
 
@@ -113,7 +120,7 @@ async def send_mil_message(message: Message, state: FSMContext, bot: Bot):
 
     try:
 
-        for chat_id in db.get_all_user_ids():
+        for chat_id in UsersDB().get_all_user_ids():
             try: 
 
                 await bot.copy_message(chat_id=chat_id, from_chat_id=message.from_user.id, message_id=message.message_id, parse_mode='Markdown')
@@ -131,13 +138,13 @@ async def send_mil_message(message: Message, state: FSMContext, bot: Bot):
 
 @router.callback_query(F.data == 'info_courses')
 async def info_courses(callback: CallbackQuery):
-    data_now_day = gs.get_info_show_courses()
+    data_now_day = gs().get_info_show_courses()
     now_date = data_now_day[0]
     clicked_start = data_now_day[1]
     watched_course_today = data_now_day[2]
     watched_course_allday = data_now_day[3]
 
-    count_users_in_db = db.get_count_users()
+    count_users_in_db = UsersDB().get_count_users()
     
 
     text= f'Информация из базы данных: \n\nДанные за сегондня {now_date} \n-Новых пользователей - {clicked_start} \n-Посмотрели курсы  - {watched_course_today} \n\nЗа все время \n-Всего пользователей в бд - {count_users_in_db} \n-Всего забрали курсов - {watched_course_allday}'

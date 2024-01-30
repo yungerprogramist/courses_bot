@@ -1,9 +1,5 @@
-from aiogram import Router
-import asyncio
-import aioschedule as schedule
-from aiogram import Bot,  F
-from time import sleep
-from DataBase.db import increment_days, check_miling_time_days
+from aiogram import Bot, F
+from DataBase.users_db import UsersDB
 
 from aiogram.utils.markdown import link
 
@@ -25,14 +21,14 @@ text_30days = f'Привет, у нас первая дата!\n\nСегодня
 
 async def mailing_messages():
 
-    increment_days()
+    UsersDB().increment_days()
         
-    for user_id in check_miling_time_days(3):
+    for user_id in UsersDB().check_miling_time_days(3):
         bot.send_message(chat_id=user_id, text=text_3day, parse_mode='Markdown')
 
 
 
-    for user_id in check_miling_time_days(30):
+    for user_id in UsersDB().check_miling_time_days(30):
         bot.send_message(chat_id=user_id, text=text_30days, parse_mode='Markdown')
 
 

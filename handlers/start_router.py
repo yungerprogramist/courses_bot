@@ -3,8 +3,9 @@ from aiogram import Router
 from aiogram import Bot,  F
 from aiogram.types import Message
 
-from DataBase import google_sheets as gs
-from DataBase import db 
+
+from DataBase.google_sheet import GoogleSheet as gs
+from DataBase.users_db import UsersDB
 from utils import keyboard as kb
 import messages as mes
 from aiogram.types.input_file import FSInputFile
@@ -18,13 +19,13 @@ async def start(message: Message, bot:Bot):
         username = message.from_user.username
         chat_id = message.from_user.id
 
-        if not db.check_reg(username):
-            gs.start_gs() 
-            db.start_db(username, chat_id)
+        if not UsersDB().check_reg(username):
+            gs().start_gs() 
+            UsersDB().start_db(username, chat_id)
 
             photo = FSInputFile("photos_for_message/start_photo.jpg")
             await bot.send_photo(chat_id=chat_id, photo=photo, caption=mes.start_mes, reply_markup=kb.start_but, parse_mode='Markdown')
-            # await bot.send_message(chat_id=-4086068688, text=f'Пользователь @{username}, нажал кнопку старт')
+            await bot.send_message(chat_id=-4086068688, text=f'Пользователь @{username}, нажал кнопку старт')
 
         else:
 

@@ -6,10 +6,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import FSInputFile
 
 from utils import keyboard as kb
-from DataBase import db
-from DataBase import google_sheets as gs
+from DataBase.courses_db import CoursesDB
+from DataBase.google_sheet import GoogleSheet as gs
 import messages as mes
 from utils.FSMclasses import Qestion
+
 
 
 CHANEL_DB = '@courses_b_db'
@@ -19,9 +20,9 @@ router = Router()
 
 @router.message(F.text == 'Доступные курсы')
 async def courses(message: Message, bot: Bot):
-    chamel_id = message.from_user.id
-    channel_id = '-1001579575685'
-    user_channel_status = await bot.get_chat_member(chat_id=channel_id, user_id=chamel_id)
+    chanel_id = message.from_user.id
+    channel_id_sub = '-1001579575685'
+    user_channel_status = await bot.get_chat_member(chat_id=channel_id_sub, user_id=chanel_id)
     
     if not ('left' in str(user_channel_status)):
         photo = FSInputFile("photos_for_message/courses_photo.jpg")
@@ -47,7 +48,7 @@ async def courses_show(callback: CallbackQuery, bot: Bot):
 @router.callback_query(lambda call: 'courseforuser:' in call.data )
 async def courses_show(callback: CallbackQuery):
     course_name = callback.data.split(':')[1]
-    description = db.get_description_corse(course_name)
+    description = CoursesDB().get_description_corse(course_name)
     await callback.message.answer(text = f'{course_name} \n\n{description}', reply_markup=kb.open_course_markup(course_name))
 
 @router.callback_query(lambda call: 'showcourse:' in call.data )
@@ -55,7 +56,7 @@ async def show_course(callback: CallbackQuery, bot: Bot):
     msg = await callback.message.answer('Актуализируем курс…✏️')
 
     course_name = callback.data.split(':')[1]
-    data_course = db.get_course(course_name)
+    data_course = CoursesDB().get_course(course_name)
 
     value = data_course[0]
     filepath = data_course[1]
@@ -68,7 +69,7 @@ async def show_course(callback: CallbackQuery, bot: Bot):
 
     await bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
 
-    gs.watched_course()
+    gs().watched_course()
 
     
     await bot.send_message(chat_id=-4086068688, text=f'Пользователь @{callback.from_user.username}, забрал курс {course_name}')

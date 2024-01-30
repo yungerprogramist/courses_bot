@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 
 class Qestion(StatesGroup):
     course: str = State()
-    qestion: str = State() #str
+    qestion: str = State() 
 
 class DataCorse(StatesGroup):
     name: str = State() 
