@@ -26,4 +26,7 @@ def create_course_db():
     db.commit()
     sql.close()
 
+# create_course_db()
+# create_user_db()
+
 

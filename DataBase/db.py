@@ -204,5 +204,21 @@ def check_miling_time_days(days: int) -> list:
         if db: db.close()
 
 
+def get_count_users() ->int:
+    """Возвращает количество пользователей в бд"""
+    db = None
+    try: 
+        db = sqlite3.connect('project.db') 
+        sql = db.cursor()
 
+        count_users = sql.execute(f'SELECT count(id) FROM users_table').fetchone()[0]
+
+        return count_users
+        
+    except sqlite3.Error as ex:
+        if db: db.rollback() 
+        print (f'Упс что то пошло не так с базой данных - {ex}') 
+    finally: 
+        db.commit()
+        if db: db.close()
 

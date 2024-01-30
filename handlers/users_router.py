@@ -12,6 +12,8 @@ import messages as mes
 from utils.FSMclasses import Qestion
 
 
+CHANEL_DB = '@courses_b_db'
+
 
 router = Router()
 
@@ -56,10 +58,13 @@ async def show_course(callback: CallbackQuery, bot: Bot):
     data_course = db.get_course(course_name)
 
     value = data_course[0]
-    filepath = FSInputFile(data_course[1])
+    filepath = data_course[1]
 
     chat_id = callback.from_user.id
-    await bot.send_document(chat_id=chat_id, document=filepath, caption=value)
+
+    await callback.message.answer(text=value)
+    await bot.send_document(chat_id=callback.from_user.id, document=filepath)
+    
 
     await bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
 

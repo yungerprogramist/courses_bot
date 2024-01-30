@@ -24,7 +24,7 @@ async def start(message: Message, bot:Bot):
 
             photo = FSInputFile("photos_for_message/start_photo.jpg")
             await bot.send_photo(chat_id=chat_id, photo=photo, caption=mes.start_mes, reply_markup=kb.start_but, parse_mode='Markdown')
-            await bot.send_message(chat_id=-4086068688, text=f'Пользователь @{username}, нажал кнопку старт')
+            # await bot.send_message(chat_id=-4086068688, text=f'Пользователь @{username}, нажал кнопку старт')
 
         else:
 

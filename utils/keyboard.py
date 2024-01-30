@@ -15,6 +15,7 @@ admin_menu = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='�
 choise_do_admin = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Добавить курс', callback_data='add_course')],
     [InlineKeyboardButton(text='Удалить курс', callback_data='delete_course')],
+    [InlineKeyboardButton(text='Инфо о боте', callback_data='info_courses')],
     [InlineKeyboardButton(text='Рассылка', callback_data='miling_mes')]
 ])
 

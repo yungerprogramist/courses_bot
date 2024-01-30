@@ -6,10 +6,12 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from utils import keyboard as kb
+from DataBase import google_sheets as gs
 from DataBase import db
 from utils.FSMclasses import  DataCorse, MilingMes
 
 
+CHANEL_DB = '@courses_b_db'
 
 
 router = Router()
@@ -61,12 +63,13 @@ async def value_course(message: Message, state: FSMContext, bot: Bot):
     text_value = message.caption
     await state.update_data(value=text_value)
 
+
+    message_id=message.message_id
     file_id = message.document.file_id
-    file_path = f'content/{file_id}.pdf'
-    await bot.download(file=file_id, destination=file_path)
+    await bot.copy_message(chat_id=CHANEL_DB, from_chat_id=message.from_user.id, message_id=message_id)
     
     data = await state.get_data()
-    data['filepath'] = file_path
+    data['filepath'] = file_id
     db.add_course_db(data)
 
     await state.clear()
@@ -121,3 +124,21 @@ async def send_mil_message(message: Message, state: FSMContext, bot: Bot):
         await message.answer(text='Что то пошло не так при попытке сделать рассылку, убедитесь, что вы отправили сообщение вместе с фотографией !')
 
     await message.answer(text='Рассылка закончена', reply_markup=kb.admin_menu)
+
+
+"""=======================Информация о боте из базы данных==================================="""
+
+
+@router.callback_query(F.data == 'info_courses')
+async def info_courses(callback: CallbackQuery):
+    data_now_day = gs.get_info_show_courses()
+    now_date = data_now_day[0]
+    clicked_start = data_now_day[1]
+    watched_course_today = data_now_day[2]
+    watched_course_allday = data_now_day[3]
+
+    count_users_in_db = db.get_count_users()
+    
+
+    text= f'Информация из базы данных: \n\nДанные за сегондня {now_date} \n-Новых пользователей - {clicked_start} \n-Посмотрели курсы  - {watched_course_today} \n\nЗа все время \n-Всего пользователей в бд - {count_users_in_db} \n-Всего забрали курсов - {watched_course_allday}'
+    await callback.message.answer(text=text, reply_markup=kb.admin_menu)

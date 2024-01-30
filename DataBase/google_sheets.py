@@ -53,28 +53,51 @@ def watched_course():
     """Добавляет +1 к столбцу 'Посмотрел курсы'
     Так же проверяет дату, если не сходится, то создается новая строка в таблице"""
     worksheet = google_sheets()
-    # try:
+    try:
+        worksheet = google_sheets()
+        moscow_time = str(datetime.now(pytz.timezone('Europe/Moscow'))).split(' ')[0] 
+        last_date = list(filter(None, worksheet.col_values(1)))[-1] #забираем последнюю дату из таблицы
+        last_row = int(next_available_row(worksheet))
+
+        if last_date != moscow_time:
+            worksheet.update_cell(row=last_row, col=1, value=moscow_time)
+            worksheet.update_cell(row=last_row, col=3, value='1') 
+            # worksheet.update_acell("A{}".format(last_row), moscow_time)
+        else: 
+            start_value = worksheet.cell(row=last_row-1, col=3).value#берем последнее значение столбца синформацией о нажатой кнопкой старт
+
+            if start_value:
+                worksheet.update_cell(row=last_row-1, col=3, value=str(int(start_value)+1)) #добавляем к значению + 1
+            else:
+                worksheet.update_cell(row=last_row-1, col=3, value='1') 
+        return True
+    except Exception as ex:
+        print(f'Упс, что то пошло не так с google_sheets - {ex}')
+        return False
+
+
+def get_info_show_courses() ->list:
+    """Возвращает список просмотров курсов за сегодня, дату, нажали кнопку start и сколько всего пользователей посмотрели курсы [дата, нажали старт, просотры, всего просмотров]"""
     worksheet = google_sheets()
-    moscow_time = str(datetime.now(pytz.timezone('Europe/Moscow'))).split(' ')[0] 
-    last_date = list(filter(None, worksheet.col_values(1)))[-1] #забираем последнюю дату из таблицы
-    last_row = int(next_available_row(worksheet))
+    try:
+        worksheet = google_sheets()
+        last_date = list(filter(None, worksheet.col_values(1)))[-1] #забираем последнюю дату из таблицы
+        watched_courses = list(filter(None, worksheet.col_values(3)))[-1] 
+        clicked_start = list(filter(None, worksheet.col_values(3)))[-1] 
 
-    if last_date != moscow_time:
-        worksheet.update_cell(row=last_row, col=1, value=moscow_time)
-        worksheet.update_cell(row=last_row, col=3, value='1') 
-        # worksheet.update_acell("A{}".format(last_row), moscow_time)
-    else: 
-        start_value = worksheet.cell(row=last_row-1, col=3).value#берем последнее значение столбца синформацией о нажатой кнопкой старт
+        values_list = worksheet.col_values(3) #забираем все значения столбца
 
-        if start_value:
-            worksheet.update_cell(row=last_row-1, col=3, value=str(int(start_value)+1)) #добавляем к значению + 1
-        else:
-            worksheet.update_cell(row=last_row-1, col=3, value='1') 
-    return True
-    # except Exception as ex:
-    #     print(f'Упс, что то пошло не так с google_sheets - {ex}')
-    #     return False
+        all_watched_courses = 0
+        for i in values_list:
+            try:
+                all_watched_courses += int(i)
+            except:
+                continue
 
+        return last_date, clicked_start, watched_courses, all_watched_courses
+        
+    except Exception as ex:
+        print(f'Упс, что то пошло не так с google_sheets - {ex}')
 
 
 
