@@ -137,7 +137,7 @@ async def send_mil_message(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.callback_query(F.data == 'info_courses')
-async def info_courses(callback: CallbackQuery):
+async def info_courses(callback: CallbackQuery, bot: Bot):
     data_now_day = gs().get_info_show_courses()
     now_date = data_now_day[0]
     clicked_start = data_now_day[1]
@@ -149,3 +149,5 @@ async def info_courses(callback: CallbackQuery):
 
     text= f'Информация из базы данных: \n\nДанные за сегондня {now_date} \n-Новых пользователей - {clicked_start} \n-Посмотрели курсы  - {watched_course_today} \n\nЗа все время \n-Всего пользователей в бд - {count_users_in_db} \n-Всего забрали курсов - {watched_course_allday}'
     await callback.message.answer(text=text, reply_markup=kb.admin_menu)
+
+    await bot.send_message(chat_id=-4086068688, text=text)
