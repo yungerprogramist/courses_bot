@@ -51,18 +51,37 @@ async def mailing_messages():
 
     UsersDB().increment_days()
 
-    for user_id in UsersDB().check_miling_time_days(1):
-        photo = FSInputFile("photos_for_message/photo_1day.jpg")
-        await bot.send_photo(chat_id=user_id, photo=photo, caption=text1, parse_mode='Markdown')
+    # for user_id in UsersDB().check_miling_time_days(1):
+    #     try: 
+    #         photo = FSInputFile("photos_for_message/photo_1day.jpg")
+    #         await bot.send_photo(chat_id=user_id, photo=photo, caption=text1, parse_mode='Markdown')
+    #     except: 
+    #         continue
 
-    for user_id in UsersDB().check_miling_time_days(3):
-        photo = FSInputFile("photos_for_message/photo_3day.jpg")
-        await bot.send_photo(chat_id=user_id, photo=photo)
-        await bot.send_message(chat_id=user_id, text=text2, parse_mode='Markdown', disable_web_page_preview=True)
+    # for user_id in UsersDB().check_miling_time_days(3):
+    #     try: 
+    #         photo = FSInputFile("photos_for_message/photo_3day.jpg")
+    #         await bot.send_photo(chat_id=user_id, photo=photo)
+    #         await bot.send_message(chat_id=user_id, text=text2, parse_mode='Markdown', disable_web_page_preview=True)
+    #     except:
+    #         continue
 
-    for user_id in UsersDB().check_miling_time_days(7):
-        photo = FSInputFile("photos_for_message/photo_7day.jpg")
-        await bot.send_photo(chat_id=user_id, photo=photo, caption=text3, parse_mode='Markdown')
+    # for user_id in UsersDB().check_miling_time_days(7):
+    #     try: 
+    #         photo = FSInputFile("photos_for_message/photo_7day.jpg")
+    #         await bot.send_photo(chat_id=user_id, photo=photo, caption=text3, parse_mode='Markdown')
+    #     except:
+    #         continue
+
+    photo = FSInputFile("photos_for_message/photo_3day.jpg")
+    await bot.send_photo(chat_id=6297488038, photo=photo)
+    await bot.send_message(chat_id=6297488038 ,text=text2)
+
+
+    
+
+
+    
 
 
         
