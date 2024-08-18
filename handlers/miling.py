@@ -73,13 +73,13 @@ async def mailing_messages():
     #     except:
     #         continue
 
-    # photo = FSInputFile("photos_for_message/photo_3day.jpg")
-    # await bot.send_photo(chat_id=6297488038, photo=photo)
-    # await bot.send_message(chat_id=6297488038 ,text=text2)
-
     photo = FSInputFile("photos_for_message/photo_3day.jpg")
-    await bot.send_photo(chat_id=636749011, photo=photo)
-    await bot.send_message(chat_id=636749011, text=text2, parse_mode='Markdown', disable_web_page_preview=True)
+    await bot.send_photo(chat_id=6297488038, photo=photo)
+    await bot.send_message(chat_id=6297488038 ,text=text2, parse_mode='Markdown', disable_web_page_preview=True)
+
+    # photo = FSInputFile("photos_for_message/photo_3day.jpg")
+    # await bot.send_photo(chat_id=636749011, photo=photo)
+    # await bot.send_message(chat_id=636749011, text=text2, parse_mode='Markdown', disable_web_page_preview=True)
     # await bot.send_message(chat_id=6297488038, text=text2, parse_mode='Markdown', disable_web_page_preview=True)
 
     
