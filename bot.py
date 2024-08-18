@@ -19,8 +19,7 @@ def run_miling():
     
 
 async def job_schedule():
-    # schedule.every().day.at("12:00", "Europe/Moscow").do(run_miling)
-    schedule.every().minute.do(run_miling)
+    schedule.every().day.at("12:00", "Europe/Moscow").do(run_miling)
     while True:
         schedule.run_pending()
         await asyncio.sleep(1)
