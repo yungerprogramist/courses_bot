@@ -102,3 +102,17 @@ class UsersDB(BaseDB):
         finally: 
             self.db.commit()
             if db: self.db.close()
+
+
+    def zero_days(self):
+        """Обнуляет количество дней пользователей бота"""
+        db = None
+        try: 
+            self.sql.execute(f'UPDATE {self.__name_table} SET count_day=0')
+            
+        except sqlite3.Error as ex:
+            if db: self.db.rollback() 
+            print (f'Упс что то пошло не так с базой данных - {ex}') 
+        finally: 
+            self.db.commit()
+            if db: self.db.close()
